@@ -1,6 +1,6 @@
 {
   "name": "promise-class",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "promises for classes made easy",
   "main": "index.js",
   "repository": {
