@@ -154,8 +154,9 @@ function wrapClass (classConstructor, mixins, isAnonymous) {
 			classConstructorArgumentNames = this.classConstructorArgumentNames;
 
 		class ${className} extends this.classConstructor {
-			constructor(...actualArgs) {
-				var args = classConstructorArgumentNames.slice(0);
+			constructor() {
+				var actualArgs = slice.call(arguments),
+					args = classConstructorArgumentNames.slice(0);
 
 				super(...args.map(function (arg, index) {
 					var argumentName = classConstructorArgumentNames[index];
