@@ -1,0 +1,20 @@
+{
+  "name": "promise-class",
+  "version": "0.0.1",
+  "description": "promises for classes made easy",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/icodeforlove/node-promise-class.git"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "vows-harmony": "^0.9.0-rc3",
+    "bluebird": "1.0.0"
+  },
+  "author": "Chad Scira <_@chad.so>",
+  "license": "MIT",
+  "scripts": {
+    "test": "vows --spec"
+  }
+}
