@@ -1,4 +1,4 @@
-## promise-class
+## promise-class [![Build Status](https://travis-ci.org/icodeforlove/node-promise-class.png?branch=master)](https://travis-ci.org/icodeforlove/node-promise-class)
 easy promises,  coroutines, and a few other goodies!
 
 - by having a **$deferred** argument in a method you now have a function that returns a 
