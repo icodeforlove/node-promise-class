@@ -9,12 +9,12 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "vows-harmony": "^0.9.0-rc3",
+    "vows": "^0.9.0-rc3",
     "bluebird": "1.0.0"
   },
   "author": "Chad Scira <_@chad.so>",
   "license": "MIT",
   "scripts": {
-    "test": "node --harmony node_modules/vows-harmony/bin/vows --spec"
+    "test": "node --harmony node_modules/vows/bin/vows --spec"
   }
 }

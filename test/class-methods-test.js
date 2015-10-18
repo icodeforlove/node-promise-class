@@ -1,6 +1,6 @@
 "use strict";
 
-var vows = require('vows-harmony'),
+var vows = require('vows'),
 	assert = require('assert'),
 	PromiseClass = require('../index');
 
