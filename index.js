@@ -176,8 +176,20 @@ function wrapClass (classConstructor, mixins, isAnonymous) {
 				mixinInitializers.forEach(function (initializer) {
 					initializer.call(this);
 				}, this);
+
+				var proto = this;
+				while ((proto = proto.__proto__) && proto) {
+					Object.getOwnPropertyNames(proto).forEach(function (propertyName) {
+						if (typeof proto[propertyName] !== 'function' || !(proto instanceof Object) || ['constructor'].indexOf(propertyName) !== -1) {
+							return;
+						}
+
+						this[propertyName] = this[propertyName].bind(this);
+					}, this);
+				}
 			}
 		}
+
 	`);
 
 	wrapMethods(classConstructor, classConstructor, 'class', topLevelClassConstructor);
