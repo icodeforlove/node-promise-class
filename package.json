@@ -15,6 +15,6 @@
   "author": "Chad Scira <_@chad.so>",
   "license": "MIT",
   "scripts": {
-    "test": "vows --spec"
+    "test": "node --harmony node_modules/vows-harmony/bin/vows --spec"
   }
 }
