@@ -71,7 +71,6 @@ there are a few rules with these params
 these pseudo params are supported
 
 * **$deferred** converts the method into a deferred method
-* **$super** returns the parent method
 * **$class** returns the class
 * **$self** alternative to var self = this;
 * **$\*config**,  **$\*settings**, **$\*options** ensures that the first argument is an object
@@ -166,7 +165,7 @@ User.reopen({
 });
 ```
 
-when you reopen a method that already exists you gain access to `$super`
+when you should not reopen and override existing methods because you cant use super 
 
 ## mixins
 ```javascript
