@@ -245,24 +245,6 @@ module.exports = function (classConstructor) {
 	var mixins = slice.call(arguments, 1);
 	return wrapClass(classConstructor, mixins);
 };
-module.exports.each = function (objects, func) {
-	if (func.constructor.name === 'GeneratorFunction') {
-		func = co.wrap(func);
-	}
-
-	return new SelectedPromise (function (resolve, reject) {
-	    var length = 0;
-
-	    function next() {
-	        if (length < objects.length) {
-	            func(objects[length++]).then(next, reject);
-	        } else {
-	        	resolve();
-	        }
-	    }
-	    next();
-	});
-}
 module.exports.wrap = co.wrap;
 module.exports.anonymous = function (classConstructor) {
 	var mixins = slice.call(arguments, 1);

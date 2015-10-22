@@ -240,3 +240,29 @@ or
 var User = PromiseClass.anonymous(class {
 });
 ```
+
+## wrap
+
+Convience method for creating a coroutine
+
+```javascript
+var getUser = PromiseClass.wrap(function *(id) {
+	var user = yield getUser(id);
+	...
+	return user;
+});
+
+getUser(123).then(function (user) {
+	console.log(user);
+});
+```
+
+Or
+
+```javascript
+var users = yield BlueBird.map(userIds, PromiseClass.wrap(function *(id) {
+	var user = yield getUser(id);
+	...
+	return user;
+}));
+```
