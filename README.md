@@ -11,7 +11,7 @@ coroutines in PromiseClass are 15x faster than PromiseObject ;)
 
 ## requirements
 
-you must be using at minimum node **4.0.0** with the **--harmony** option, we are living on the edge here
+you must be using at minimum node **5.0.0**
 
 ## usage
 
