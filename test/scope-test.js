@@ -20,6 +20,14 @@ var Class = PromiseClass.anonymous(class Class {
 	boundMethod ($self) {
 		this.foo = 'bar';
 	}
+
+	static whatsMyScope () {
+		return this;
+	}
+
+	static *whatsMyScopeDeferred ($deferred) {
+		$deferred.resolve(this);
+	}
 }, EventsMixin);
 
 var suite = vows.describe('Scope Tests');
@@ -37,6 +45,30 @@ suite.addBatch({
 
 		'did we update the right scope': function (topic) {
 			assert.equal(topic.foo, 'bar');
+		}
+	},
+
+	'Class Scope Test': {
+		topic: function () {
+			return Class.whatsMyScope();
+		},
+
+		'do we have the right scope': function (topic) {
+			assert.equal(topic, topic);
+		}
+	},
+
+	'Class Deferred Scope Test': {
+		topic: function () {
+			var self = this;
+
+			Class.whatsMyScopeDeferred().then(function (scope) {
+				self.callback(false, scope);
+			});
+		},
+
+		'do we have the right scope': function (topic) {
+			assert.equal(topic, topic);
 		}
 	}
 });

@@ -156,23 +156,27 @@ function wrapClass (classConstructor, mixins, isAnonymous) {
 		class ${className} extends this.classConstructor {
 			constructor() {
 				var actualArgs = slice.call(arguments),
-					args = classConstructorArgumentNames.slice(0);
+					args = classConstructorArgumentNames.slice(0).map(function (arg, index) {
+						var argumentName = classConstructorArgumentNames[index];
 
-				super(...args.map(function (arg, index) {
-					var argumentName = classConstructorArgumentNames[index];
-					
-					if (!arg) {
-						return actualArgs.shift();
-					} else if (arg === '$self') {
-						throw new Error('Cannot use $self in a constructor');
-					} else if (arg === '$class') {
-						return ${className};
-					} else if (arg.match(OPTIONS_REGEXP)) {
-						return actualArgs.shift() || {};
-					} else {
-						throw new Error('Unhandled psuedo argument' + arg);
-					}
-				}));
+						if (!arg) {
+							return actualArgs.shift();
+						} else if (arg === '$self') {
+							throw new Error('Cannot use $self in a constructor');
+						} else if (arg === '$class') {
+							return ${className};
+						} else if (arg.match(OPTIONS_REGEXP)) {
+							return actualArgs.shift() || {};
+						} else {
+							throw new Error('Unhandled psuedo argument' + arg);
+						}
+					});
+
+				if (!args.length) {
+					args = actualArgs;	
+				}
+
+				super(...args);
 
 				mixinInitializers.forEach(function (initializer) {
 					initializer.call(this);
