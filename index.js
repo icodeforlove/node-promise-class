@@ -1,7 +1,8 @@
 "use strict";
 
 var co = require('./lib/co'),
-	SelectedPromise = Promise;
+	SelectedPromise = Promise,
+	preEval = function (code) {return code;};
 
 const OPTIONS_REGEXP = /^\$.*[o|O]ptions$|\$.*[s|S]ettings$|\$.*[c|C]onfig$/;
 const ARGUMENTS_REGEXP = /(?:^(?:function|)|constructor)\s*\*?[a-z0-9_$,\s]*\s*\(([a-z0-9_$,\s]+)\)/i
@@ -144,58 +145,62 @@ function wrapClass (classConstructor, mixins, isAnonymous) {
 		}
 	});
 
-	var topLevelClassConstructor = function(str){return eval(str)}.call(
-		{
-			classConstructor: classConstructor,
-			classConstructorArgumentNames: getPseudoArgs(classConstructor, String(classConstructor)),
-			mixinInitializers: mixinInitializers
-		}, `
-		var mixinInitializers = this.mixinInitializers,
-			classConstructorArgumentNames = this.classConstructorArgumentNames;
+	var refHash = Math.random();
 
-		class ${className} extends this.classConstructor {
-			constructor() {
-				var actualArgs = slice.call(arguments),
-					args = classConstructorArgumentNames.slice(0).map(function (arg, index) {
-						var argumentName = classConstructorArgumentNames[index];
+	var EVAL_SCOPE_POINTER = {
+		classConstructor: classConstructor,
+		classConstructorArgumentNames: getPseudoArgs(classConstructor, String(classConstructor)),
+		mixinInitializers: mixinInitializers
+	};
 
-						if (!arg) {
-							return actualArgs.shift();
-						} else if (arg === '$self') {
-							throw new Error('Cannot use $self in a constructor');
-						} else if (arg === '$class') {
-							return ${className};
-						} else if (arg.match(OPTIONS_REGEXP)) {
-							return actualArgs.shift() || {};
-						} else {
-							throw new Error('Unhandled psuedo argument' + arg);
-						}
-					});
+	var topLevelClassConstructor = eval(preEval(`
+			(function () {
+				var mixinInitializers = EVAL_SCOPE_POINTER.mixinInitializers,
+					classConstructorArgumentNames = EVAL_SCOPE_POINTER.classConstructorArgumentNames;
 
-				if (!args.length) {
-					args = actualArgs;	
-				}
+				return class ${className} extends EVAL_SCOPE_POINTER.classConstructor {
+					constructor() {
+						var actualArgs = slice.call(arguments),
+							args = classConstructorArgumentNames.slice(0).map(function (arg, index) {
+								var argumentName = classConstructorArgumentNames[index];
 
-				super(...args);
+								if (!arg) {
+									return actualArgs.shift();
+								} else if (arg === '$self') {
+									throw new Error('Cannot use $self in a constructor');
+								} else if (arg === '$class') {
+									return ${className};
+								} else if (arg.match(OPTIONS_REGEXP)) {
+									return actualArgs.shift() || {};
+								} else {
+									throw new Error('Unhandled psuedo argument' + arg);
+								}
+							});
 
-				mixinInitializers.forEach(function (initializer) {
-					initializer.call(this);
-				}, this);
-
-				var proto = this;
-				while ((proto = proto.__proto__) && proto) {
-					Object.getOwnPropertyNames(proto).forEach(function (propertyName) {
-						if (typeof proto[propertyName] !== 'function' || !(proto instanceof Object) || ['constructor'].indexOf(propertyName) !== -1) {
-							return;
+						if (!args.length) {
+							args = actualArgs;	
 						}
 
-						this[propertyName] = this[propertyName].bind(this);
-					}, this);
-				}
-			}
-		}
+						super(...args);
 
-	`);
+						mixinInitializers.forEach(function (initializer) {
+							initializer.call(this);
+						}, this);
+
+						var proto = this;
+						while ((proto = proto.__proto__) && proto) {
+							Object.getOwnPropertyNames(proto).forEach(function (propertyName) {
+								if (typeof proto[propertyName] !== 'function' || !(proto instanceof Object) || ['constructor'].indexOf(propertyName) !== -1) {
+									return;
+								}
+
+								this[propertyName] = this[propertyName].bind(this);
+							}, this);
+						}
+					}
+				}
+			}());
+	`));
 
 	wrapMethods(classConstructor, classConstructor, 'class', topLevelClassConstructor);
 	wrapMethods(classConstructor, classConstructor.prototype, 'prototype', topLevelClassConstructor);
@@ -257,4 +262,7 @@ module.exports.anonymous = function (classConstructor) {
 module.exports.setPromise = function (newPromise) {
 	SelectedPromise = newPromise;
 	co.setPromise(newPromise);
+};
+module.exports.setPreEval = function (func) {
+	preEval = func
 };
