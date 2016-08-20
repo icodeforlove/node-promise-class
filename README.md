@@ -1,3 +1,5 @@
+# THIS IS DEPRECATED IN FAVOR OF ES7 ASYNC/AWAIT
+
 ## promise-class [![Build Status](https://travis-ci.org/icodeforlove/node-promise-class.png?branch=master)](https://travis-ci.org/icodeforlove/node-promise-class)
 easy promises,  coroutines, and a few other goodies!
 
